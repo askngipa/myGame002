@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +7,10 @@ public class Player : MonoBehaviour
 {
     public Vector2 inputVec;
     public float Speed;
+
+    //플레이어 스크립트에서 검색 클래스 타입변수 선언및 초기화
+    public Scanner scanner;
+
     Rigidbody2D rig;
     SpriteRenderer spriter;
     Animator anim;
@@ -14,6 +20,7 @@ public class Player : MonoBehaviour
         rig=GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim =GetComponent<Animator>();
+        scanner = GetComponent<Scanner>();
     }
 
     private void FixedUpdate()
