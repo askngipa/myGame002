@@ -13,19 +13,25 @@ public class Enemy : MonoBehaviour
     bool isLive;
 
     Rigidbody2D rig;
+    Collider2D coll;
     Animator anim;
     SpriteRenderer spriter;
+    WaitForFixedUpdate wait;
 
+    //초기화
     private void Awake()
     {
         rig = GetComponent<Rigidbody2D>();
+        coll = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
         spriter = GetComponent<SpriteRenderer>();
+        wait = new WaitForFixedUpdate();
     }
 
     private void FixedUpdate()
     {
-        if(!isLive)
+        //GetCurrentAnimatorStateInfo : 현재 상태 정보를 가져오는함수
+        if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
             return;
 
         //위치차이 = 타겟위치 - 나의위치
@@ -50,6 +56,10 @@ public class Enemy : MonoBehaviour
     {
         target = GameManager.instance.player.GetComponent<Rigidbody2D>();
         isLive = true; //생존여부와 체력 초기화
+        coll.enabled = true;
+        rig.simulated = true;
+        spriter.sortingOrder = 2;
+        anim.SetBool("Dead", false);
         health = maxHealth; //초기화
     }
 
@@ -70,17 +80,55 @@ public class Enemy : MonoBehaviour
 
         //컴포넌트"bullet"으로 접근하여 데미지를 가져와 피격 계산
         health -= collision.GetComponent<Bullet>().damage;
+        StartCoroutine(KnockBack());
 
         //남은체력을 조건으로 피격과 사망으로 로직으로 나누기
         if (health > 0)
         {
             //Live, Hit, Action
+            //피격 부분에 애니메이션 SetTrigget함수를 호출하여 상태 변경
+            anim.SetTrigger("Hit");
         }
         else
         {
-            //die..
+            isLive = false;
+
+            //컴포넌트 비활성화는 .enabled = false;
+            coll.enabled = false;
+
+            //리지드바디의 물리적 비활성화는 .simulated = false;
+            rig.simulated = false;
+
+            //스프라이트 렌더러의 sortingOrder 감소
+            //order in layer 감소
+            spriter.sortingOrder = 1;
+
+            //SetBool함수를 통해 죽는 애니메이션 상태로 전환
+            anim.SetBool("Dead", true);
+
             Dead();
         }
+
+    }
+
+    //코루틴 Coroutine : 생명주기와 비동기처럼 실행되는 함수
+    //IEnumerator : 코루틴만의 반환형 인터페이스
+    IEnumerator KnockBack()
+    {
+        //yield : 코루틴의 반환 키워드
+        //yield return 을 통해 다양한 쉬는시간을 지정
+        //yield return null; //1프레임 쉬기 //하나의 물리 프레임을 딜레이
+        //yield return new WaitForSeconds(2f); //2초 쉬기
+
+        yield return wait;//다음 하나의 물리프레임 딜레이
+        Vector3 playerPos = GameManager.instance.player.transform.position;
+
+        //플레이어 기준의 반대방향 : 현재위치 - 플레이어 위치
+        Vector3 dirVec = transform.position - playerPos;
+
+        //리지드바디2D의 AddForce함수로 힘 가하기
+        //순간적인 힘이므로 ForceMode2D.Impulse속성 추가.
+        rig.AddForce(dirVec.normalized *3,ForceMode2D.Impulse);
 
     }
 
