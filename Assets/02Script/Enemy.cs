@@ -12,8 +12,8 @@ public class Enemy : MonoBehaviour
 
     bool isLive;
 
-    Rigidbody2D rig;
     Collider2D coll;
+    Rigidbody2D rig;
     Animator anim;
     SpriteRenderer spriter;
     WaitForFixedUpdate wait;
@@ -21,8 +21,8 @@ public class Enemy : MonoBehaviour
     //초기화
     private void Awake()
     {
-        rig = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
+        rig = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriter = GetComponent<SpriteRenderer>();
         wait = new WaitForFixedUpdate();
@@ -47,6 +47,8 @@ public class Enemy : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!isLive)
+            return;
         //목표의 x축과 자신의 x축의 값을 비교하여 작으면 true가 되도록 설정
         spriter.flipX = target.position.x < rig.position.x;
     }
@@ -75,7 +77,8 @@ public class Enemy : MonoBehaviour
     //OnTriggerEnter2D 매개변수의 태그조건으로 활용
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Bullet"))
+                                                //사망 로직이 연달아 실행되는걸 방지
+        if (!collision.CompareTag("Bullet") || !isLive) 
             return;
 
         //컴포넌트"bullet"으로 접근하여 데미지를 가져와 피격 계산
@@ -106,7 +109,9 @@ public class Enemy : MonoBehaviour
             //SetBool함수를 통해 죽는 애니메이션 상태로 전환
             anim.SetBool("Dead", true);
 
-            Dead();
+            //몬스터 사망시 경험치획득
+            GameManager.instance.kill++;
+            GameManager.instance.GetExp();
         }
 
     }
@@ -128,7 +133,7 @@ public class Enemy : MonoBehaviour
 
         //리지드바디2D의 AddForce함수로 힘 가하기
         //순간적인 힘이므로 ForceMode2D.Impulse속성 추가.
-        rig.AddForce(dirVec.normalized *3,ForceMode2D.Impulse);
+        rig.AddForce(dirVec.normalized * 3, ForceMode2D.Impulse);
 
     }
 
