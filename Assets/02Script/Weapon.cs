@@ -65,18 +65,41 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void Init()
+    //Weapon 초기화 함수에 스크립터블 오브젝트를 매개변수로 받아 활용
+    public void Init(ItemData data)
     {
+        //Basic Set
+        name = "Weapon " + data.itemID;
+        transform.parent = player.transform;
+
+        //지역위치인 localPosition을 원점으로 변경
+        transform.localPosition = Vector3.zero;
+
+        //Property Set
+        //초기화
+        ID = data.itemID;
+        damage = data.baseDamage;
+        count = data.baseCount;
+        
+        for(int i = 0; i < GameManager.instance.pool.prefabs.Length; i++)
+        {
+            if (data.projectile == GameManager.instance.pool.prefabs[i])
+            {
+                prefabID =i;
+                break;
+            }
+        }
+
         switch (ID)
         {
             case 0:
-                speed = -150;
+                speed = 150;
                 Batch();
                 break;
 
             default:
                 //speed값은 연사속도를 의미: 적을수록 많이 발사
-                speed = 0.3f;
+                speed = 0.4f;
                 break;
         }
     }

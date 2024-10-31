@@ -45,10 +45,15 @@ public class HUD : MonoBehaviour
 
                 //A % B:A를B로 나누고 남은 나머지
                 int sec= Mathf.FloorToInt(remainTime % 60);
+
+                //D1, D2, D3... : 자리수를 지정
+                myText.text = string.Format("{0:D2}:{1:D2}", min, sec);
                 break;
 
             case InfoType.Health:
-
+                float curHealth = GameManager.instance.health;
+                float maxHealth = GameManager.instance.maxHealth;
+                mySlider.value = curHealth / maxHealth;
                 break;
         }
     }
