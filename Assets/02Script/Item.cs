@@ -8,9 +8,12 @@ public class Item : MonoBehaviour
     public ItemData data;
     public int level;
     public Weapon weapon;
+    public Gear gear;
 
     Image icon;
     Text textLevel;
+    Text textName;
+    Text textDesc;
 
     private void Awake()
     {
@@ -21,6 +24,10 @@ public class Item : MonoBehaviour
 
         Text[] texts = GetComponentsInChildren<Text>();
         textLevel = texts[0];
+        textName = texts[1];
+        textDesc = texts[2];
+
+        textName.text = data.itemName;
     }
 
     private void LateUpdate()
@@ -44,20 +51,42 @@ public class Item : MonoBehaviour
                     weapon.Init(data);
                 }
 
+                else
+                {
+                    float nextDamage = data.baseDamage;
+                    int nextCount = 0;
+
+                    //처음 이후의 레벨업은 데미지 횟수를 계산
+                    nextDamage += data.baseDamage * data.damages[level];
+                    nextCount += data.counts[level];
+
+                    weapon.LevelUp(nextDamage, nextCount);
+                }
+                level++;
                 break;
 
             case ItemData.ItemType.Glove:
-                break;
-
             case ItemData.ItemType.Shoe:
+
+                if (level == 0)
+                {
+                    GameObject newGear = new GameObject();
+                    gear = newGear.AddComponent<Gear>();
+                    gear.Init(data);
+                }
+                else
+                {
+                    float nextRate = data.damages[level];
+                    gear.LevelUp(nextRate);
+                }
+                level++;
                 break;
 
             case ItemData.ItemType.Heal:
+                GameManager.instance.health = GameManager.instance.maxHealth;
                 break;
 
         }
-
-        level++;
 
         if (level == data.damages.Length)
         {

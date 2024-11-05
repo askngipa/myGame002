@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
     //플레이어 스크립트에서 검색 클래스 타입변수 선언및 초기화
     public Scanner scanner;
 
+    public Hand[] hands;
+
     Rigidbody2D rig;
     SpriteRenderer spriter;
     Animator anim;
@@ -21,6 +23,9 @@ public class Player : MonoBehaviour
         spriter = GetComponent<SpriteRenderer>();
         anim =GetComponent<Animator>();
         scanner = GetComponent<Scanner>();
+
+        //인자 값 true를 넣으면 비활성화 된 오브젝트도 OK
+        hands = GetComponentsInChildren<Hand>(true);
     }
 
     private void FixedUpdate()

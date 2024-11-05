@@ -19,6 +19,7 @@ public enum ItemType
     public ItemType itemType;
     public int itemID;
     public string itemName;
+    [TextArea]
     public string itemDesc;
     public Sprite itemIcon;
 
@@ -31,4 +32,5 @@ public enum ItemType
 
     [Header("# Weapon")]
     public GameObject projectile;
+    public Sprite hand;
 }

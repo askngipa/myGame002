@@ -20,12 +20,8 @@ public class Weapon : MonoBehaviour
     private void Awake()
     {
         //GetComponentInParent : 함수로 부모의 컴포넌트 가져오기
-        player = GetComponentInParent<Player>();
-    }
-
-    private void Start()
-    {
-        Init();
+        //player = GetComponentInParent<Player>();
+        player = GameManager.instance.player;
     }
 
     private void Update()
@@ -63,6 +59,9 @@ public class Weapon : MonoBehaviour
         {
             Batch();
         }
+
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
+
     }
 
     //Weapon 초기화 함수에 스크립터블 오브젝트를 매개변수로 받아 활용
@@ -102,6 +101,18 @@ public class Weapon : MonoBehaviour
                 speed = 0.4f;
                 break;
         }
+
+        //Hand Set
+        //enum 값 앞에 int타입을 작성하여 강제 형변환
+        Hand hand = player.hands[(int)data.itemType];
+
+        hand.spriter.sprite = data.hand;
+
+        hand.gameObject.SetActive(true);
+
+        //BroadcastMessage : 특정 함수 호출을 모든 자식에게 방송하는 함수
+        //BroadcastMessage 의 두번째 인자값으로 DontRequireReceiver 추가
+        player.BroadcastMessage("ApplyGear",SendMessageOptions.DontRequireReceiver);
     }
 
     //생성된 무기를 배치하는 함수생성 및 호출
