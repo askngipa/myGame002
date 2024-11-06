@@ -30,6 +30,9 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         //GetCurrentAnimatorStateInfo : 현재 상태 정보를 가져오는함수
         if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
             return;
@@ -47,6 +50,9 @@ public class Enemy : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         if (!isLive)
             return;
         //목표의 x축과 자신의 x축의 값을 비교하여 작으면 true가 되도록 설정
