@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
 
     public Hand[] hands;
 
+    public RuntimeAnimatorController[] animCon; 
+
     Rigidbody2D rig;
     SpriteRenderer spriter;
     Animator anim;
@@ -25,6 +27,21 @@ public class Player : MonoBehaviour
 
         //인자 값 true를 넣으면 비활성화 된 오브젝트도 OK
         hands = GetComponentsInChildren<Hand>(true);
+    }   
+
+    private void OnEnable()
+    {
+        Speed *= Character.Speed;
+        anim.runtimeAnimatorController = animCon[GameManager.instance.playerID];
+    }
+
+    private void Update()
+    {
+        if (!GameManager.instance.isLive)
+            return;
+
+        inputVec.x = Input.GetAxisRaw("Horizontal");
+        inputVec.y = Input.GetAxisRaw("Vertical");
     }
 
     private void FixedUpdate()
@@ -36,14 +53,6 @@ public class Player : MonoBehaviour
         rig.MovePosition(rig.position + nextVec);
     }
 
-    private void Update()
-    {
-        if (!GameManager.instance.isLive)
-            return;
-
-        inputVec.x = Input.GetAxisRaw("Horizontal");
-        inputVec.y = Input.GetAxisRaw("Vertical");
-    }
 
     //LateUpdate : 프레임이 종료되기 전 실행되는 생명주기 함수
     private void LateUpdate()
@@ -80,6 +89,9 @@ public class Player : MonoBehaviour
 
             //애니메이터 SetTrigger 함수로 죽음 애니메이션 실행
             anim.SetTrigger("Dead");
+
+            //게임오버 함수를 플레이어 스크립트에 사망 부분에서 호출하도록 작성
+            GameManager.instance.GameOver();
         }
     }
 }

@@ -55,7 +55,7 @@ public class Weapon : MonoBehaviour
 
     public void LevelUp(float damage,int count)
     {
-        this.damage = damage;
+        this.damage = damage * Character.Damage;
         this.count += count;
 
         if (ID == 0)
@@ -80,8 +80,8 @@ public class Weapon : MonoBehaviour
         //Property Set
         //초기화
         ID = data.itemID;
-        damage = data.baseDamage;
-        count = data.baseCount;
+        damage = data.baseDamage * Character.Damage;
+        count = data.baseCount * Character.Count;
         
         for(int i = 0; i < GameManager.instance.pool.prefabs.Length; i++)
         {
@@ -95,13 +95,13 @@ public class Weapon : MonoBehaviour
         switch (ID)
         {
             case 0:
-                speed = 150;
+                speed = 150 * Character.WeaponSpeed;
                 Batch();
                 break;
 
             default:
                 //speed값은 연사속도를 의미: 적을수록 많이 발사
-                speed = 0.4f;
+                speed = 0.5f * Character.WeaponRate;
                 break;
         }
 
